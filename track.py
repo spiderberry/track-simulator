@@ -246,13 +246,6 @@ class Players:
         player.stamina = player.stamina - 5
 
 class Tracksim():
-    
-    mean100m = 10.7459527863
-    sd100m = 0.133776557
-    mean200m = 21.52218721
-    sd200m = 0.160942679
-    mean400m = 44.8896305
-    sd400m = 0.3135084355
 
     def sort_race(runners_time, runners):
 
@@ -265,29 +258,47 @@ class Tracksim():
                     i.place = j + 1
 
     def one_hundred_meters(runner):
-
+        
+        mean100m = 10.7459527863
+        sd100m = 0.133776557
+        max_time = 8.00  # Maximum overall performance time
         overall = runner.overall_100m()
 
-        mean = Tracksim.mean100m -(overall - 50) * (3 * (Tracksim.sd100m *.3125)) / 50
-        time = np.random.normal(mean, (Tracksim.sd100m *.3125))
+        # Adjusting mean and standard deviation based on overall performance
+        mean = mean100m - (overall - 50) * (mean100m - max_time) / 50
+        
+        # Generating random time within the adjusted mean and standard deviation
+        time = np.random.normal(mean, sd100m)
         
         return time
-    
+
     def two_hundred_meters(runner):
 
+        mean200m = 21.52218721
+        sd200m = 0.160942679
+        max_time = 15.80
         overall = runner.overall_200m()
 
-        mean = Tracksim.mean200m -(overall - 50) * (3 * (Tracksim.sd200m *.3125)) / 50
-        time = np.random.normal(mean, (Tracksim.sd200m *.3125))
+        # Adjusting mean and standard deviation based on overall performance
+        mean = mean200m - (overall - 50) * (mean200m - max_time) / 50
+        
+        # Generating random time within the adjusted mean and standard deviation
+        time = np.random.normal(mean, sd200m)
         
         return time
     
     def four_hundred_meters(runner):
 
+        mean400m = 44.8896305
+        sd400m = 0.3135084355
+        max_time = 35.60
         overall = runner.overall_400m()
 
-        mean = Tracksim.mean400m -(overall - 50) * (3 * (Tracksim.sd400m *.3125)) / 50
-        time = np.random.normal(mean, (Tracksim.sd400m *.3125))
+        # Adjusting mean and standard deviation based on overall performance
+        mean = mean400m - (overall - 50) * (mean400m - max_time) / 50
+        
+        # Generating random time within the adjusted mean and standard deviation
+        time = np.random.normal(mean, sd400m)
         
         return time
     
@@ -573,10 +584,12 @@ def game_loop():
 
         user = Player(name, age, acceleration, endurance, form, mental, speed, start)
         #testing results for maxed player
-        #user.acceleration = user.endurance = user.form = user.mental = user.speed = user.start = 100
+        user.acceleration = user.endurance = user.form = user.mental = user.speed = user.start = 100
         players = []
         players.append(user)
         Players.generate_random_characters(7, players)
+        players[1].acceleration = players[1].endurance = players[1].form = players[1].mental = players[1].speed = players[1].start = 0
+        players[4].acceleration = players[4].endurance = players[4].form = players[4].mental = players[4].speed = players[4].start = 45
 
         print(f"This is your player: {user}" )
         print("Let the game begin!")
