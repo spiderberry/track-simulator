@@ -1,6 +1,6 @@
 import random
 import numpy as np
-
+#need to add xp for races, sort by place, mental should increase if in top 3, stay the same if in 4,5 and decrease if in bottom 3, +5 +3 +1 0 0 -1 -3 -5. add else statements for invalid options. make rest or train excecute for sucessful rests
 class Player:
 
     #Constructor with player attributes
@@ -85,9 +85,41 @@ class Player:
 
         return scaled_ovr
     
-class Players:
+    def set_attribute(attribute_name, attribute_points):
+        attribute = None
 
-    import random
+        while attribute is None or attribute < 0 or attribute > min(100, attribute_points):
+            try:
+                
+                attribute = int(input(f"Input your {attribute_name}(0-100). You have {attribute_points} attribute point(s) remaining: "))
+            except ValueError:
+                print("Input is not a valid number. Please try again: ")
+            if attribute is not None and (attribute < 0 or attribute > min(100, attribute_points)):
+                print(f"That number is not between 0 and {min(100, attribute_points)}. Please try again.")
+        return attribute
+    
+    def set_acceleration(self, value):
+        self.acceleration = max(0, min(value, 100))
+
+    def set_endurance(self, value):
+        self.endurance = max(0, min(value, 100))
+
+    def set_form(self, value):
+        self.form = max(0, min(value, 100))
+
+    def set_mental(self, value):
+        self.mental = max(0, min(value, 100))
+
+    def set_speed(self, value):
+        self.speed = max(0, min(value, 100))
+
+    def set_stamina(self, value):
+        self.stamina = max(0, min(value, 100))
+
+    def set_start(self, value):
+        self.start = max(0, min(value, 100))
+
+class Players:
 
     def random_name_from_file():
 
@@ -164,31 +196,71 @@ class Players:
 
         return players
 
+    def random_train(player):
+
+        training_options = [Players._100_practice, Players._200_practice, Players._400_practice, Players.acceleration_practice, Players.endurance_practice, Players.form_practice, Players.mental_practice, Players.speed_practice, Players.start_practice]
+
+        random_function = random.choice(training_options)
+
+        return random_function(player)
+    
+    def rest_or_train(player):
+        
+        options = [Players.random_train, Players.rest]
+
+        random_function = random.choice(options)
+        if random_function == Players.rest:
+            return f"{player.name}: {random_function(player)}"
+
+        return random_function(player)
+
+    def rest(player):
+
+        if player.stamina >= 100:
+           return "You've maxed your stamina!\n"
+
+        else:
+            sublist = players[1:8]
+            for i in sublist:
+                print(Players.rest_or_train(i))
+
+            stamina_gained = random.randint(1,10)
+            player.set_stamina(player.stamina + stamina_gained)
+            return f"You've rested and gained {stamina_gained} stamina\nYour stamina is now {player.stamina}.\n"
+        
+    
     def _100_practice(player):
 
         #Random amount of xp
         xp = random.randint(1,5)
         xp2 = random.randint(1,3)
-        xp3= random.randint(1,2)
+        xp3 = random.randint(1,2)
+        stamina_loss = 10
 
         #Adding random xp
-        player.acceleration = player.acceleration + xp
-        player.speed = player.speed + xp2
-        player.start = player.start + xp3
-        player.stamina = player.stamina - 10
+        player.set_acceleration(player.acceleration + xp)
+        player.set_speed(player.speed + xp2)
+        player.set_start(player.start + xp3)
+        player.set_stamina(player.stamina - stamina_loss)
+
+        return f"{player.name} improved acceleration by {xp}, speed by {xp2}, and stamina by {xp3}. You used {stamina_loss} stamina.\n"
 
     def _200_practice(player):
 
         #Random amount of xp
-        xp = random.randint(1,3)
-        xp2 = random.randint(1,5)
+        xp = random.randint(1,5)
+        xp2 = random.randint(1,3)
         xp3= random.randint(1,2)
+        stamina_loss = 10
 
-        #Adding random xp
-        player.acceleration = player.acceleration + xp
-        player.speed = player.speed + xp2
-        player.endurance = player.endurance + xp3
-        player.stamina = player.stamina - 10
+        #Adding random xp and decreasing stamina
+    
+        player.set_speed(player.speed + xp)
+        player.set_acceleration(player.acceleration + xp2)
+        player.set_endurance(player.endurance + xp3)
+        player.set_stamina(player.stamina - stamina_loss)
+
+        return f"{player.name} improved speed by {xp}, acceleration by {xp2}, and endurance by {xp3}. You used {stamina_loss} stamina.\n"
 
     def _400_practice(player):
 
@@ -196,54 +268,76 @@ class Players:
         xp = random.randint(1,5)
         xp2 = random.randint(1,3)
         xp3= random.randint(1,2)
+        stamina_loss = 10
 
-        #Adding random xp
-        player.endurance = player.endurance + xp
-        player.form = player.form + xp2
-        player.speed = player.speed + xp3
-        player.stamina = player.stamina - 10
+        #Adding random xp and decreasing stamina
+    
+        player.set_endurance(player.endurance + xp)
+        player.set_form(player.form + xp2)
+        player.set_speed(player.speed + xp3)
+        player.set_stamina(player.stamina - stamina_loss)
+
+        return f"{player.name} improved endurance by {xp}, form by {xp2}, and speed by {xp3}. You used {stamina_loss} stamina.\n"
 
     def acceleration_practice(player):
 
         xp = random.randint(5,10)
+        stamina_loss = 5
 
-        player.acceleration = player.acceleration + xp
-        player.stamina = player.stamina - 5
+        player.set_acceleration(player.acceleration + xp)
+        player.set_stamina(player.stamina - stamina_loss)
+
+        return f"{player.name} improved acceleration by {xp}. You used {stamina_loss} stamina.\n"
 
     def endurance_practice(player):
 
         xp = random.randint(5,10)
+        stamina_loss = 5
 
-        player.endurance = player.endurance + xp
-        player.stamina = player.stamina - 5
+        player.set_endurance(player.endurance + xp)
+        player.set_stamina(player.stamina - stamina_loss)
+
+        return f"{player.name} improved endurance by {xp}. You used {stamina_loss} stamina.\n"
 
     def form_practice(player):
 
         xp = random.randint(5,10)
+        stamina_loss = 5
 
-        player.form = player.form + xp
-        player.stamina = player.stamina - 5
+        player.set_form(player.form + xp)
+        player.set_stamina(player.stamina - stamina_loss)
+
+        return f"{player.name} improved form by {xp}. You used {stamina_loss} stamina.\n"
 
     def mental_practice(player):
 
         xp = random.randint(5,10)
+        stamina_loss = 5
 
-        player.mental = player.mental + xp
-        player.stamina = player.stamina - 5
+        player.set_mental(player.mental + xp)
+        player.set_stamina(player.stamina - stamina_loss)
+
+        return f"{player.name} improved mental by {xp}. You used {stamina_loss} stamina.\n"
 
     def speed_practice(player):
 
         xp = random.randint(5,10)
+        stamina_loss = 5
 
-        player.speed = player.speed + xp
-        player.stamina = player.stamina - 5
+        player.set_speed(player.speed + xp)
+        player.set_stamina(player.stamina - stamina_loss)
+
+        return f"{player.name} improved speed by {xp}. You used {stamina_loss} stamina.\n"
 
     def start_practice(player):
 
         xp = random.randint(5,10)
+        stamina_loss = 5
 
-        player.start = player.start + xp
-        player.stamina = player.stamina - 5
+        player.set_start(player.start + xp)
+        player.set_stamina(player.stamina - stamina_loss)
+
+        return f"{player.name} improved start by {xp}. You used {stamina_loss} stamina.\n"
 
 class Tracksim():
 
@@ -344,6 +438,9 @@ class Tracksim():
             runners[i].stamina -= 10
 
         Tracksim.sort_race(runners_time, runners)
+
+        for i in runners:
+            pass
             
     def two_hundred_meters_race(runners):
         
@@ -438,169 +535,105 @@ def game_loop():
 
     while run_program:
 
-        print("Create your player!")
-        name = input("Input a name: ")
+        print("Create your player!\n")
+        name = input("Input a name: \n")
+        print()
 
         #User age input, make sure input is a number and is between 18-40
         while True:
             try:
-                age = int(input("Input an age between 18 and 40: "))
+                age = int(input("Input an age between 18 and 40: \n"))
+                print()
+
                 if 18 <= age <= 40:
                     break  # Break out of the loop if input is an integer within the range
                 else:
-                    print("Age must be between 18 and 40. Please try again.")
+                    print("Age must be between 18 and 40. Please try again.\n")
             except ValueError:
-                print("Input is not a valid integer. Please try again.")
+                print("Input is not a valid integer. Please try again.\n")
             
-        print("You have a maximum of 150 attribute points. Attributes scale 0 to 100. You have 6 attributes. Acceleration, Endurance, Form, Mental, Speed, Start")
-
         #Prompts user to input set their attribute points. Loops until all attribute points are used
         while attribute_points > 0:
 
-            #Sets acceleration attribute based on user input
-            acceleration = None
-            while acceleration is None or acceleration < 0 or acceleration > min(100, attribute_points):
-
-                try:
-                    acceleration = int(input(f"Input your acceleration(0-100). You have {attribute_points} attribute point(s) remaining: "))
-
-                except ValueError:
-                    print("Input is not a valid number. Please try again:")
-
-                if acceleration is not None and (acceleration < 0 or acceleration > min(100, attribute_points)):
-                    print(f"That number is not between 0 and {min(100, attribute_points)}. Please try again.")
-
+            print(f"You have a maximum of {attribute_points} attribute points. Attributes scale 0 to 100. You have 6 attributes. Acceleration, Endurance, Form, Mental, Speed, Start\n")
+        
+            acceleration = Player.set_attribute("acceleration", attribute_points)
             attribute_points -= acceleration
-            print(f"Your acceleration is {acceleration}. You have {attribute_points} attribute point(s) remaining and 5 attributes left.")
+            print(f"Your acceleration is {acceleration}. You have {attribute_points} attribute point(s) remaining and 5 attributes left.\n")
 
-            #Checks if all attribute points are used. If so the rest of the attributes are set to 0 and the loop is broken
-            if attribute_points <= 0:
+            if attribute_points == 0:
                 endurance = form = mental = speed = start = 0
-                break
-
-            #Sets endurance attribute based on user input
-            endurance = None
-            while endurance is None or endurance < 0 or endurance > min(100, attribute_points):
-
-                try:
-                    endurance = int(input(f"Input your endurance(0-100). You have {attribute_points} attribute point(s) remaining: "))
-
-                except ValueError:
-                    print("Input is not a valid number. Please try again: ")
-
-                if endurance is not None and (endurance < 0 or endurance > min(100, attribute_points)):
-                    print(f"That number is not between 0 and {min(100, attribute_points)}. Please try again.")
-
-            attribute_points -= endurance
-            print(f"Your endurance is {endurance}. You have {attribute_points} attribute point(s) remaining and 4 attributes left")
-
-            #Checks if all attribute points are used. If so the rest of the attributes are set to 0 and the loop is broken
-            if attribute_points <= 0:
-                form = mental = speed = start = 0
-                break
-
-            #Sets form attribute based on user input
-            form = None
-            while form is None or form < 0 or form > min(100, attribute_points):
-
-                try:
-                    form = int(input(f"Input your form(0-100). You have {attribute_points} attribute point(s) remaining: "))
-
-                except ValueError:
-                    print("Input is not a valid number. Please try again: ")
-
-                if form is not None and (form < 0 or form > min(100, attribute_points)):
-                    print(f"That number is not between 0 and {min(100, attribute_points)}. Please try again.")
-
-            attribute_points -= form
-            print(f"Your form is {form}. You have {attribute_points} attribute point(s) remaining and 3 attributes left")
-
-            #Checks if all attribute points are used. If so the rest of the attributes are set to 0 and the loop is broken
-            if attribute_points <= 0:
-                mental = speed = start = 0
-                break
-
-            #Sets mental attribute based on user input
-            mental = None
-            while mental is None or mental < 0 or mental > min(100, attribute_points):
-
-                try:
-                    mental = int(input(f"Input your mental(0-100). You have {attribute_points} attribute point(s) remaining: "))
-
-                except ValueError:
-                    print("Input is not a valid number. Please try again: ")
-
-                if mental is not None and (mental < 0 or mental > min(100, attribute_points)):
-                    print(f"That number is not between 0 and {min(100, attribute_points)}. Please try again.")
-
-            attribute_points -= mental
-            print(f"Your mental is {mental}. You have {attribute_points} attribute point(s) remaining and 2 attributes left")
-
-            #Checks if all attribute points are used. If so the rest of the attributes are set to 0 and the loop is broken
-            if attribute_points <= 0:
-                speed = start = 0
+                print("You've used all your attribute points\n")
                 break
             
-            #Sets speed attribute based on user input
-            speed = None
-            while speed is None or speed < 0 or speed > min(100, attribute_points):
+            endurance = Player.set_attribute("endurance", attribute_points)
+            attribute_points -= endurance
+            print(f"Your endurance is {endurance}. You have {attribute_points} attribute point(s) remaining and 4 attributes left.\n")
 
-                try:
-                    speed = int(input(f"Input your speed(0-100). You have {attribute_points} attribute point(s) remaining. Any unused points will be used in the last category: "))
-
-                except ValueError:
-                    print("Input is not a valid number. Please try again: ")
-
-                if speed is not None and (speed < 0 or speed > min(100, attribute_points)):
-                    print(f"That number is not between 0 and min(100, attribute_points). Please try again.")
-
-            attribute_points -= speed
-            print(f"Your speed is {speed}. You have {attribute_points} attribute point(s) remaining and 1 attribute left.")
-
-            #Checks if all attribute points are used. If so the rest of the attributes are set to 0 and the loop is broken
-            if attribute_points <= 0:
-                start = 0
+            if attribute_points == 0:
+                form = mental = speed = start = 0
+                print("You've used all your attribute points\n")
                 break
+            
+            form = Player.set_attribute("form", attribute_points)
+            attribute_points -= form
+            print(f"Your form is {form}. You have {attribute_points} attribute point(s) remaining and 3 attributes left.\n")
 
-            start = None
-            while start is None or start < 0 or start > min(100, attribute_points):
+            if attribute_points == 0:
+                mental = speed = start = 0
+                print("You've used all your attribute points\n")
+                break
+            
+            mental = Player.set_attribute("mental", attribute_points)
+            attribute_points -= mental
+            print(f"Your mental is {mental}. You have {attribute_points} attribute point(s) remaining and 2 attributes left.\n")
 
-                try:
-                    start = int(input(f"Input your start(0-100). You have {attribute_points} attribute point(s) remaining: "))
-
-                except ValueError:
-                    print("Input is not a valid number. Please try again: ")
-
-                if mental is not None and (start < 0 or start > min(100, attribute_points)):
-                    print(f"That number is not between 0 and {min(100, attribute_points)}. Please try again.")
-
-            attribute_points -= start
-            print(f"Your start is {start}. You have {attribute_points} attribute point(s) remaining")
-
-            #Checks if all attribute points are used. If so the rest of the attributes are set to 0 and the loop is broken
-            if attribute_points <= 0:
+            if attribute_points == 0:
                 speed = start = 0
+                print("You've used all your attribute points\n")
+                break
+            
+            speed = Player.set_attribute("speed", attribute_points)
+            attribute_points -= speed
+            print(f"Your speed is {speed}. You have {attribute_points} attribute point(s) remaining and 1 attribute left.\n")
+
+            if attribute_points == 0:
+                start = 0
+                print("You've used all your attribute points\n")
+                break
+            
+            start = Player.set_attribute("start", attribute_points)
+            attribute_points -= start
+            print(f"Your start is {start}. You have {attribute_points} attribute point(s) remaining.\n")
+
+            if attribute_points == 0:
+                print("You've used all your attribute points\n")
                 break
 
         user = Player(name, age, acceleration, endurance, form, mental, speed, start)
         #testing results for maxed player
-        user.acceleration = user.endurance = user.form = user.mental = user.speed = user.start = 100
+        #user.acceleration = user.endurance = user.form = user.mental = user.speed = user.start = 100
         players = []
         players.append(user)
         Players.generate_random_characters(7, players)
         players[1].acceleration = players[1].endurance = players[1].form = players[1].mental = players[1].speed = players[1].start = 0
         players[4].acceleration = players[4].endurance = players[4].form = players[4].mental = players[4].speed = players[4].start = 45
 
-        print(f"This is your player: {user}" )
-        print("Let the game begin!")
+        print(f"This is your player: {user}\n" )
+        print("Let the game begin!\n")
         main_game = True
         while main_game:
 
-            print("Would you like to compete? If so press 1")
-            print("Would you like to practice? If so press 2")
-            print("Would you like to rest? If so press 3")
+            print("Would you like to compete? If so enter 1")
+            print("Would you like to practice? If so enter 2")
+            print("Would you like to rest? If so enter 3")
+            print("Would you like to display your player? if so enter 4")
+            print("Would you like to go back? If so enter 5")
+            print("Would you like to exit? If so enter 6")
+            print()
 
             choice = int(input())
+            print()
 
             if choice == 1:
 
@@ -611,40 +644,168 @@ def game_loop():
                 for i in players:
                     runners.append(i)
 
-                print("What race would you like to run?")
-                print("1: 100m")
-                print("2: 200m")
-                print("3: 400m")
+                while True:
+                    
+                    print("What race would you like to run?")
+                    print("1: 100m")
+                    print("2: 200m")
+                    print("3: 400m")
+                    print("4: Back")
+                    print("5: Exit")
+                    print()
 
-                choice = int(input())
+                    choice = int(input())
+                    print()
 
-                if choice == 1:
+                    if choice == 1:
 
-                    Tracksim.one_hundred_meters_race(runners)
+                        Tracksim.one_hundred_meters_race(runners)
 
-                    print(f"You placed {user.place} with a time of {user.last_race_time}")
+                        print(f"You placed {user.place} with a time of {user.last_race_time}\n")
+                        print(user)
+                        print()
 
-                    print(user)
+                    elif choice == 2:
 
-                if choice == 2:
+                        Tracksim.two_hundred_meters_race(runners)
 
-                    Tracksim.two_hundred_meters_race(runners)
+                        print(f"You placed {user.place} with a time of {user.last_race_time}\n")
+                        print(user)
+                        print()
 
-                    print(f"You placed {user.place} with a time of {user.last_race_time}")
+                    elif choice == 3:
 
-                    print(user)
+                        Tracksim.four_hundred_meters_race(runners)
 
-                if choice == 3:
+                        print(f"You placed {user.place} with a time of {user.last_race_time}\n")
+                        print(user)
+                        print()
 
-                    Tracksim.four_hundred_meters_race(runners)
+                    elif choice == 4:
+                        print()
+                        break
 
-                    print(f"You placed {user.place} with a time of {user.last_race_time}")
+                    elif choice == 5:
+                        run_program = False
+                        main_game = False
+                        break
 
-                    print(user)
+            elif choice == 2:
+                
+                while True:
 
+                    print("1:100m Practice(You gain a random amount of xp in acceleration, speed, and start)")
+                    print("2:200m Practice(You gain a random amount of xp in acceleration, speed, and endurance)")
+                    print("3:400m Practice(You gain a random amount of xp in endurance, form, and speed)")
+                    print("4:Acceleration practice (You gain a random amount of xp ranging from 5-10)")
+                    print("5:Endurance practice (You gain a random amount of xp ranging from 5-10)")
+                    print("6:Form practice (You gain a random amount of xp ranging from 5-10)")
+                    print("7:Mental practice (You gain a random amount of xp ranging from 5-10)")
+                    print("8:Speed practice (You gain a random amount of xp ranging from 5-10)")
+                    print("9:Start practice (You gain a random amount of xp ranging from 5-10)")
+                    print("10: Back")
+                    print("11: Exit Game")
+                    print()
+
+                    choice = int(input())
+                    print()
+
+                    if choice == 1:
+                        print(Players._100_practice(user))
+                        sublist = players[1:8]
+                        for i in sublist:
+                            print(Players.rest_or_train(i))
+
+                    elif choice == 2:
+                        print(Players._200_practice(user))
+                        sublist = players[1:8]
+                        for i in sublist:
+                            print(Players.rest_or_train(i))
+
+                    elif choice == 3:
+                        print(Players._400_practice(user))
+                        sublist = players[1:8]
+                        for i in sublist:
+                            print(Players.rest_or_train(i))
+
+                    elif choice == 4:
+                        print(Players.acceleration_practice(user))
+                        sublist = players[1:8]
+                        for i in sublist:
+                            print(Players.rest_or_train(i))
+
+                    elif choice == 5:
+                        print(Players.endurance_practice(user))
+                        sublist = players[1:8]
+                        for i in sublist:
+                            print(Players.rest_or_train(i))
+
+                    elif choice == 6:
+                        print(Players.form_practice(user))
+                        sublist = players[1:8]
+                        for i in sublist:
+                            print(Players.rest_or_train(i))
+
+                    elif choice == 7:
+                        print(Players.mental_practice(user))
+                        sublist = players[1:8]
+                        for i in sublist:
+                            print(Players.rest_or_train(i))
+
+                    elif choice == 8:
+                        print(Players.speed_practice(user))
+                        sublist = players[1:8]
+                        for i in sublist:
+                            print(Players.rest_or_train(i))
+
+                    elif choice == 9:
+                        print(Players.start_practice(user))
+                        sublist = players[1:8]
+                        for i in sublist:
+                            print(Players.rest_or_train(i))
+
+                    elif choice == 10:
+                        break
+
+                    elif choice == 11:
+                        run_program = False
+                        main_game = False
+                        break
+
+            elif choice == 3:
+
+                while True:
+
+                    print(Players.rest(user))
+
+                    print("Would you like to rest again?")
+                    print("1: Yes")
+                    print("2: Back")
+                    print("3: Exit game")
+                    print()
+
+                    choice = int(input())
+
+                    if choice == 1:
+                        continue
+
+                    elif choice == 2:
+                        break
+
+                    elif choice == 3:
+                        run_program = False
+                        main_game = False
+                        break
+
+            elif choice == 4:
+                print(user)
+                print()
+
+            elif choice == 5:
+                break
+            
+            elif choice == 6:
                 run_program = False
                 main_game = False
-
-        run_program = False
 
 game_loop()
