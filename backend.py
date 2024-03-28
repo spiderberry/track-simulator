@@ -58,7 +58,7 @@ def search_athlete(id="", first_name="", last_name="", age="", acceleration="", 
     finally:
         if connection:
             connection.close()
-
+#Unused
 def get_athlete(id):
 
     try:
