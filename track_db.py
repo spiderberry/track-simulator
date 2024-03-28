@@ -20,7 +20,7 @@ def format_athlete_info(athlete_data):
             f"Start: {athlete_data[10]}, Overall: {athlete_data[18]}, "
             f"100m Overall: {athlete_data[19]}, 200m Overall: {athlete_data[19]}, "
             f"400m Overall: {athlete_data[20]}, Races ran: {athlete_data[17]}, "
-            f" Place in Last Race: {athlete_data[11]}, "
+            f"Place in Last Race: {athlete_data[11]}, "
             f"Last Race Type: {athlete_data[12]}, Last Race Time: {athlete_data[13]}, "
             f"Fastest 100m: {athlete_data[14]}, Fastest 200m: {athlete_data[15]}, "
             f"Fastest 400m: {athlete_data[16]}"
