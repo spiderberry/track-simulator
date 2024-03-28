@@ -220,9 +220,9 @@ class Players:
            return "You've maxed your stamina!\n"
 
         else:
-            sublist = players[1:8]
-            for i in sublist:
-                print(Players.rest_or_train(i))
+            #sublist = players[1:8]
+            #for i in sublist:
+                #print(Players.rest_or_train(i))
 
             stamina_gained = random.randint(1,10)
             player.set_stamina(player.stamina + stamina_gained)
