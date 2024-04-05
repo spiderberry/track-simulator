@@ -18,10 +18,11 @@ def add_athlete(first_name, last_name, age, acceleration, endurance, form, menta
         connection = sqlite3.connect(r"C:/Users/write/OneDrive/Documents/dk/tracksim/track-simulator/track.db")
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO Athletes(first_name, last_name, age, acceleration, endurance, form, mental, speed, start)"
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (first_name, last_name, age, acceleration, endurance, form, mental, speed, stamina, start,)
+            "INSERT INTO Athletes(first_name, last_name, age, acceleration, endurance, form, mental, speed, stamina, start)"
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (first_name, last_name, age, acceleration, endurance, form, mental, speed, stamina, start,)
         )
         connection.commit()
+        print(f"{first_name} {last_name} added to database")
         
     except Error as e:
         print(e)
@@ -150,4 +151,22 @@ def update_stamina():
         if connection:
             connection.close()
 
+def update_races_ran():
+
+    try:
+        connection = sqlite3.connect(r"C:/Users/write/OneDrive/Documents/dk/tracksim/track-simulator/track.db")
+        cursor = connection.cursor()
+        cursor.execute(
+            "UPDATE Athletes SET races_ran = 0"
+        )
+        connection.commit()
+
+    except Error as e:
+        print(e)
+        
+    finally:
+        if connection:
+            connection.close()
+
 #update_stamina()
+#update_races_ran()

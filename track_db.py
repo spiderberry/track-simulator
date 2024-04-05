@@ -24,18 +24,6 @@ def format_athlete_info(athlete_data):
         f"Fastest 200m: {fastest_200m}, Fastest 400m: {fastest_400m}"
     )
 
-def sort_race(runners_time, runners):
-
-    runners_time.sort()
-
-    for runner in runners:
-        for j in range(len(runners_time)):
-            
-            if runner.last_race_time == runners_time[j]:
-
-                #backend.get_athlete()
-                backend.update_athlete(runner.id, place=(j+1))
-
 def one_hundred_meters(runner):
     
     runner
@@ -83,21 +71,25 @@ def four_hundred_meters(runner):
         return time
 
 def one_hundred_meters_race(runners):
-    runners_time = []
+    runners_time = {}
     winning_time = 15.00
     winner = None
 
     # Simulate race and find winner
     for runner in runners:
         runner_time = float(f"{one_hundred_meters(runner):.2f}")
-        runners_time.append(runner_time)
+        runners_time[runner.id] = runner_time  # Store runner's time with runner's ID as key
 
         if runner_time < winning_time:
             winning_time = runner_time
             winner = f"{runner.first_name} {runner.last_name}"
     
+    # Sort the race results by time
+    sorted_results = sorted(runners_time.items(), key=lambda x: x[1])
+    
     # Update the database records
-    for i, (runner, time) in enumerate(zip(runners, runners_time)):
+    for runner_id, time in sorted_results:
+        runner = backend.get_athlete(runner_id)
 
         # Update the athlete's records based on the latest data
         backend.update_athlete(runner.id, last_race_time=time, last_race_type="100m")
@@ -108,89 +100,104 @@ def one_hundred_meters_race(runners):
         backend.update_athlete(runner.id, stamina=(runner.stamina-10))
         backend.update_athlete(runner.id, races_ran=(runner.races_ran+1))
 
-        updated_runner = backend.get_athlete(runner.id)
-        # Replace the existing runner object in the runners list with the updated one
-        runners[i] = updated_runner
+        # Update the place
+        place = sorted_results.index((runner_id, time)) + 1
+        backend.update_athlete(runner.id, place=place)
         
     # Print the race results
     print(f"100m: {len(runners)} runners")
     print("------------------------------")
     for i, runner in enumerate(runners):
-        print(f"Lane {i+1}: {runner.first_name} {runner.last_name} ran {runners_time[i]} and placed {runner.place}. OVR: {runner.overall_100m}")
+        runner = backend.get_athlete(runner.id)
+        print(f"Lane {i+1}: {runner.first_name} {runner.last_name} ran {runner.last_race_time} and placed {runner.place}. OVR: {runner.overall_100m}")
 
     print(f"The winner is {winner} with a time of {winning_time}")
         
 def two_hundred_meters_race(runners):
+    runners_time = {}
+    winning_time = 30.00
+    winner = None
+
+    # Simulate race and find winner
+    for runner in runners:
+        runner_time = float(f"{two_hundred_meters(runner):.2f}")
+        runners_time[runner.id] = runner_time  # Store runner's time with runner's ID as key
+
+        if runner_time < winning_time:
+            winning_time = runner_time
+            winner = f"{runner.first_name} {runner.last_name}"
+    
+    # Sort the race results by time
+    sorted_results = sorted(runners_time.items(), key=lambda x: x[1])
+    
+    # Update the database records
+    for runner_id, time in sorted_results:
+        runner = backend.get_athlete(runner_id)
+
+        # Update the athlete's records based on the latest data
+        backend.update_athlete(runner.id, last_race_time=time, last_race_type="200m")
+
+        if time < runner.fastest_200m:
+            backend.update_athlete(runner.id, fastest_200m=time)
+
+        backend.update_athlete(runner.id, stamina=(runner.stamina-10))
+        backend.update_athlete(runner.id, races_ran=(runner.races_ran+1))
+
+        # Update the place
+        place = sorted_results.index((runner_id, time)) + 1
+        backend.update_athlete(runner.id, place=place)
         
-        runners_time = []
-        winning_time = 30.00
-        winner = None
+    # Print the race results
+    print(f"200m: {len(runners)} runners")
+    print("------------------------------")
+    for i, runner in enumerate(runners):
+        runner = backend.get_athlete(runner.id)
+        print(f"Lane {i+1}: {runner.first_name} {runner.last_name} ran {runner.last_race_time} and placed {runner.place}. OVR: {runner.overall_200m}")
 
-        #Simulate race and find winner
-        for runner in runners:
-            runner_time = float(f"{two_hundred_meters(runner):.2f}")
-            runners_time.append(runner_time)
-
-            if runner_time < winning_time:
-                winning_time = runner_time
-                winner = f"{runner.first_name} {runner.last_name}"
-        
-        #Update the database records
-        for runner, time in zip(runners, runners_time):
-            backend.update_athlete(runner.id, last_race_time=time, last_race_type="200m")
-
-            if time < runner.fastest_200m:
-                backend.update_athlete(runner.id, fastest_200m=time)
-
-            backend.update_athlete(runner.id, stamina=max(runner.stamina-10, 0))
-            backend.update_athlete(runner.id, races_ran=(runner.races_ran+1))
-        
-        #Print the race results
-        print(f"200m: {len(runners)} runners")
-        print("------------------------------")
-        for i, runner in enumerate(runners):
-            print(f"Lane {i+1}: {runner.first_name} {runner.last_name} ran {runners_time[i]}. OVR: {runner.overall_200m}")
-
-        print(f"The winner is {winner} with a time of {winning_time}")
-
-        # Sort the race results if needed
-        sort_race(runners_time, runners)
+    print(f"The winner is {winner} with a time of {winning_time}")
 
 def four_hundred_meters_race(runners):
+    runners_time = {}
+    winning_time = 60.00
+    winner = None
+
+    # Simulate race and find winner
+    for runner in runners:
+        runner_time = float(f"{four_hundred_meters(runner):.2f}")
+        runners_time[runner.id] = runner_time  # Store runner's time with runner's ID as key
+
+        if runner_time < winning_time:
+            winning_time = runner_time
+            winner = f"{runner.first_name} {runner.last_name}"
+    
+    # Sort the race results by time
+    sorted_results = sorted(runners_time.items(), key=lambda x: x[1])
+    
+    # Update the database records
+    for runner_id, time in sorted_results:
+        runner = backend.get_athlete(runner_id)
+
+        # Update the athlete's records based on the latest data
+        backend.update_athlete(runner.id, last_race_time=time, last_race_type="400m")
+
+        if time < runner.fastest_400m:
+            backend.update_athlete(runner.id, fastest_400m=time)
+
+        backend.update_athlete(runner.id, stamina=(runner.stamina-10))
+        backend.update_athlete(runner.id, races_ran=(runner.races_ran+1))
+
+        # Update the place
+        place = sorted_results.index((runner_id, time)) + 1
+        backend.update_athlete(runner.id, place=place)
         
-        runners_time = []
-        winning_time = 60.00
-        winner = None
+    # Print the race results
+    print(f"400m: {len(runners)} runners")
+    print("------------------------------")
+    for i, runner in enumerate(runners):
+        runner = backend.get_athlete(runner.id)
+        print(f"Lane {i+1}: {runner.first_name} {runner.last_name} ran {runner.last_race_time} and placed {runner.place}. OVR: {runner.overall_400m}")
 
-        #Simulate race and find winner
-        for runner in runners:
-            runner_time = float(f"{four_hundred_meters(runner):.2f}")
-            runners_time.append(runner_time)
-
-            if runner_time < winning_time:
-                winning_time = runner_time
-                winner = f"{runner.first_name} {runner.last_name}"
-        
-        #Update the database records
-        for runner, time in zip(runners, runners_time):
-            backend.update_athlete(runner.id, last_race_time=time, last_race_type="400m")
-
-            if time < runner.fastest_400m:
-                backend.update_athlete(runner.id, fastest_400m=time)
-
-            backend.update_athlete(runner.id, stamina=max(runner.stamina-10, 0))
-            backend.update_athlete(runner.id, races_ran=(runner.races_ran+1))
-        
-        #Print the race results
-        print(f"400m: {len(runners)} runners")
-        print("------------------------------")
-        for i, runner in enumerate(runners):
-            print(f"Lane {i+1}: {runner.first_name} {runner.last_name} ran {runners_time[i]}. OVR: {runner.overall_400m}")
-
-        print(f"The winner is {winner} with a time of {winning_time}")
-
-        # Sort the race results if needed
-        sort_race(runners_time, runners)
+    print(f"The winner is {winner} with a time of {winning_time}")
 
 chosen_numbers = set()
 runners = []
@@ -198,7 +205,7 @@ runners = []
 #Fills runner with random runners
 for i in range(8):
     while True:
-        random_number = str(random.randint(1,99))
+        random_number = str(random.randint(1,102))
         if random_number not in chosen_numbers:
             chosen_numbers.add(random_number)
             break
@@ -206,15 +213,16 @@ for i in range(8):
     athlete = backend.get_athlete(random_number)
     runners.append(athlete)
 
-one_hundred_meters_race(runners)
+one_hundred_meters_race(runners2)
 print()
 
-two_hundred_meters_race(runners)
+two_hundred_meters_race(runners2)
 print()
 
-four_hundred_meters_race(runners)
+four_hundred_meters_race(runners2)
 print()
 
+backend.update_stamina()
 
 def game_loop():
     pass
