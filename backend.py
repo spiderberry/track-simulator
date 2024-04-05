@@ -1,4 +1,5 @@
 import sqlite3
+import logging
 from sqlite3 import Error
 from collections import namedtuple
 
@@ -8,6 +9,8 @@ Athlete = namedtuple('Athlete', [
     'last_race_type', 'fastest_100m', 'fastest_200m', 'fastest_400m', 
     'races_ran', 'overall', 'overall_100m', 'overall_200m', 'overall_400m'
 ])
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def add_athlete(first_name, last_name, age, acceleration, endurance, form, mental, speed, stamina, start):
 
@@ -112,14 +115,39 @@ def update_athlete(id, first_name="", last_name="", age="", acceleration="", end
             sql_statement = f"UPDATE Athletes SET {set_clause} WHERE id=?"
             
             # Execute the SQL statement with the provided values
+            #get_athlete(id)
             cursor.execute(sql_statement, params)
             connection.commit()
+            #logging.info(f"Athlete with id {id} updated successfully.")
         else:
+            logging.warning(f"Athlete with id {id} not found.")
             print(f"Athlete with id {id} not found.")
 
     except Error as e:
+        logging.error(f"Database error: {e}")
         print(e)
+        raise
 
     finally:
         if connection:
             connection.close()
+            #logging.info("Database connection closed.")
+
+def update_stamina():
+
+    try:
+        connection = sqlite3.connect(r"C:/Users/write/OneDrive/Documents/dk/tracksim/track-simulator/track.db")
+        cursor = connection.cursor()
+        cursor.execute(
+            "UPDATE Athletes SET stamina = 100"
+        )
+        connection.commit()
+
+    except Error as e:
+        print(e)
+        
+    finally:
+        if connection:
+            connection.close()
+
+#update_stamina()
