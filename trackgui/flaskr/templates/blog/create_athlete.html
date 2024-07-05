@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Create Athlete{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="first_name">First Name</label>
+    <input name="first_name" id="first_name" value="{{ request.form['first_name'] }}" required>
+    <label for="last_name">Last Name</label>
+    <input name="last_name" id="last_name" value="{{ request.form['last_name'] }}" required>
+    <label for="age">Age</label>
+    <input name="age" id="age" value="{{ request.form['age'] }}" required>
+    <label for="acceleration">Acceleration</label>
+    <input name="acceleration" id="acceleration" value="{{ request.form['acceleration'] }}" required>
+    <label for="endurance">Endurance</label>
+    <input name="endurance" id="endurance" value="{{ request.form['endurance'] }}" required>
+    <label for="form">Form</label>
+    <input name="form" id="form" value="{{ request.form['form'] }}" required>
+    <label for="mental">Mental</label>
+    <input name="mental" id="mental" value="{{ request.form['mental'] }}" required>
+    <label for="speed">Speed</label>
+    <input name="speed" id="speed" value="{{ request.form['speed'] }}" required>
+    <label for="start">Start</label>
+    <input name="start" id="start" value="{{ request.form['start'] }}" required>
+    <input type="submit" value="Create Athlete">
+  </form>
+{% endblock %}

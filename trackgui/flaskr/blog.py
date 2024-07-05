@@ -86,7 +86,7 @@ def update(id):
             return redirect(url_for("blog.index"))
         
     return render_template("blog/update.html", post = post)
-
+        
 @bp.route("/<int:id>/delete", methods = ("POST",))
 @login_required
 def delete(id):
@@ -95,3 +95,73 @@ def delete(id):
     db.execute("DELETE FROM post WHERE id = ?", (id,))
     db.commit()
     return redirect(url_for("blog.index"))
+
+@bp.route("/create_athlete", methods = ("GET", "POST"))
+@login_required
+def create_athlete():
+    if request.method == "POST":
+        first_name = request.form["first_name"]
+        last_name = request.form["last_name"]
+        age = request.form["age"]
+        acceleration = request.form["acceleration"]
+        endurance = request.form["endurance"]
+        form = request.form["form"]
+        mental = request.form["mental"]
+        start = request.form["start"]
+        speed = request.form["speed"]
+        error = None
+
+        if not first_name:
+            error = "First name is required."
+
+        elif not last_name:
+            error = "Last name is required."
+
+        elif not age:
+            error = "Age is required."
+
+        elif not acceleration:
+            error = "Acceleration is required."
+
+        elif not endurance:
+            error = "Endurance is required."
+
+        elif not form:
+            error = "Form is required."
+
+        elif not mental:
+            error = "Mental is required."
+
+        elif not speed:
+            error = "Speed is required."
+            
+        elif not start:
+            error = "Start is required."
+
+        elif error is not None:
+            flash(error)
+        else:
+            db = get_db()
+            cursor = db.cursor()
+            user_id = g.user["id"]
+            athlete_id = cursor.execute(
+                "SELECT athlete_id FROM user WHERE id = ?", (user_id,)
+            ).fetchone()[0]
+            cursor.execute(
+                "UPDATE Athletes "
+                 "SET first_name = ?, "
+                    "last_name = ?, "
+                    "age = ?, "
+                    "acceleration = ?, "
+                    "endurance = ?, "
+                    "form = ?, "
+                    "mental = ?, "
+                    "speed = ?, "
+                    "start = ? "
+                "WHERE id = ?",
+                (first_name, last_name, age, acceleration, endurance, form, mental, speed, start, athlete_id),
+            )
+            db.commit()
+            return redirect(url_for("blog.index"))
+        
+    return render_template("blog/create_athlete.html")

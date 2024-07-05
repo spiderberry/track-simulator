@@ -16,6 +16,7 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
         db = get_db()
+        cursor = db.cursor()
         error = None
 
         if not username:
@@ -26,9 +27,32 @@ def register():
 
         if error is None:
             try:
-                db.execute(
+                cursor.execute(
                     "INSERT INTO user (username, password) VALUES (?, ?)",
                     (username, generate_password_hash(password)),
+                )
+                db.commit()
+
+                cursor.execute(
+                    "INSERT INTO Athletes(first_name, last_name, age, acceleration, endurance, form, mental, speed, start)"
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+                    (f"{username}'s", "Player", 16, 5, 5, 5, 5, 5, 5)
+                )
+                db.commit()
+
+                user_id = cursor.execute(
+                    "SELECT id FROM user WHERE username = ?", (username,)
+                ).fetchone()["id"]
+
+                next_athlete_id = cursor.execute(
+                    "SELECT MAX(id) FROM Athletes"
+                ).fetchone()[0]
+
+                cursor.execute(
+                    "UPDATE user "
+                    "SET athlete_id = ? "
+                    "WHERE id = ?",
+                    (next_athlete_id, user_id)
                 )
                 db.commit()
             except db.IntegrityError:
